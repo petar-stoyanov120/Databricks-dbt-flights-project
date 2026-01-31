@@ -1,10 +1,15 @@
 # ✈️ End-to-End Flight Data Engineering Pipeline  
-**Databricks • dbt • Medallion Architecture**
+**Databricks | Medallion Architecture | Incremental Processing**
+
+---
 
 ## 📌 Project Overview
-This project demonstrates an **automated, incremental data engineering pipeline** built on **Databricks**, following the **Medallion Architecture**.
+This project demonstrates an **end-to-end data engineering pipeline** built on **Databricks**, following the **Medallion Architecture** pattern.
 
-The pipeline processes raw flight booking data through **Bronze, Silver, and Gold layers**, culminating in a **production-ready Gold layer** modeled as a **Star Schema** and consumed through **dbt Cloud**.
+The pipeline ingests raw flight booking data, processes it incrementally through **Bronze, Silver, and Gold layers**, and produces **analytics-ready fact and dimension tables**.
+
+> ⚠️ **Note:**  
+> `dbt` is planned for the analytics layer but **has not yet been integrated** into the repository.
 
 ---
 
@@ -16,17 +21,19 @@ The data flows through the following stages:
 
 2. **Bronze Layer**
    - Incremental ingestion using **Databricks Autoloader**
+   - Implemented via PySpark structured streaming
 
 3. **Silver Layer**
-   - Data cleaning and quality enforcement via  
+   - Data cleansing and validation using  
      **Lakeflow Declarative Pipelines (DLT)**
+   - Enforces data quality expectations
 
 4. **Gold Layer**
-   - Dynamic dimensional modeling (**Star Schema**)
+   - Star Schema modeling (Facts & Dimensions)
    - Implements **Slowly Changing Dimensions (SCD Type 1)**
 
-5. **Analytics Layer**
-   - Business logic transformations managed in **dbt Cloud**
+5. **Analytics Layer (Planned)**
+   - Business transformations using **dbt Cloud**
 
 ---
 
@@ -36,19 +43,19 @@ The data flows through the following stages:
 - **Databricks (Free Edition)**
 
 ### Storage & Governance
-- **Unity Catalog**
 - **Delta Lake**
+- **Unity Catalog**
 - **Databricks Volumes**
 
 ### Processing
 - **PySpark**
 - **Spark Structured Streaming**
 
-### Orchestration & Workflow
-- **Databricks Jobs** (Control Flow & Looping)
-- **Lakeflow**
+### Orchestration
+- **Databricks Jobs**
+- **Lakeflow (DLT)**
 
-### Transformation & Modeling
+### Analytics (Planned)
 - **dbt Cloud**
 - **Databricks SQL Warehouse**
 
@@ -57,43 +64,56 @@ The data flows through the following stages:
 ## 🧠 Key Engineering Concepts Demonstrated
 
 ### 🔹 Medallion Architecture
-Structured progression of data:
-- **Bronze** → Raw, incremental ingestion  
-- **Silver** → Cleaned, validated datasets  
-- **Gold** → Business-ready dimensional models  
+- **Bronze:** Raw, incremental ingestion  
+- **Silver:** Cleaned and validated datasets  
+- **Gold:** Business-ready fact & dimension tables  
 
 ### 🔹 Incremental Processing
-- Efficient ingestion using **Databricks Autoloader**
-- Processes data in an **“available-once”** pattern
+- Autoloader-based ingestion
+- Efficient handling of new and changed data
 
 ### 🔹 Dynamic Pipeline Design
-- Reusable **Python builders** for facts and dimensions
-- Parameter-driven pipelines instead of static notebooks
+- Parameter-driven PySpark pipelines
+- Reusable builders for dimensions and facts
+- Avoids static, one-off notebooks
 
 ### 🔹 Data Quality Enforcement
-- **DLT Expectations** to:
+- DLT expectations to:
   - Drop malformed records
-  - Flag data quality issues early
+  - Enforce schema and null checks
 
 ### 🔹 SCD Type 1
-- Dynamic handling of dimension updates
-- Ensures a **single version of the truth**
+- Overwrites dimension records on change
+- Maintains a single, current version of truth
 
 ---
 
-## 🚀 Future Improvements
-- ✅ Add **dbt Tests** for schema & referential integrity
-- ⚡ Explore **Liquid Clustering** or **Partition Pruning** in Gold
-- 🔄 Integrate **CI/CD pipelines** for dbt deployments
+## 📂 Repository Structure
 
----
-
-## 📂 Repository Structure (Optional)
 ```text
-.
-├── bronze/
-├── silver/
-├── gold/
-├── dbt/
-├── jobs/
+Databricks&DBT End-To-End project/
+│
+├── SILVER_DLT_PIPELINE/
+│   └── (DLT pipeline notebooks & logic)
+│
+├── BronzeLayer.py
+├── GOLD_FACT.py
+├── Gold_Dims.py
+├── Setup.py
+├── SrcParameters.py
+│
+├── dim_airports.csv
+├── dim_airports_increment.csv
+├── dim_airports_scd.csv
+│
+├── dim_flights.csv
+├── dim_flights_increment.csv
+├── dim_flights_scd.csv
+│
+├── dim_passengers.csv
+├── dim_passengers_increment.csv
+├── dim_passengers_scd.csv
+│
+├── fact_bookings.csv
+│
 └── README.md
